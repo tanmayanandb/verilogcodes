@@ -1,0 +1,581 @@
+// AND TWO NUMBERS
+
+//`timescale 1ns / 1ps
+
+
+module test(x1, x2, f); 
+    input x1, x2;
+    output f;
+    and(f, x1, x2);
+endmodule
+
+
+// Diagram 1
+
+module test(x1, x2, x3, x4, f); 
+    input x1, x2, x3, x4;
+    output f;
+    assign g = (x1&x3)|(x2&x4);
+    assign h = (x1|~x3)&(~x2|x4);
+    assign f = (g)|(h);
+endmodule
+
+// Diagram 2 - gl
+
+
+module test(x1, x2, x3, f); 
+    input x1, x2, x3;
+    output f;
+    not(nx1, x1);
+    not(nx2, x2);
+    not(nx3, x3);
+    
+    or(o1, x1, x2, x3);
+    or(o2, nx1, nx2, x3);
+    or(o3, x1, nx2, nx3);
+    or(o4, nx1, x2, nx3);
+    
+    and(f, o1, o2, o3, o4);
+    
+endmodule
+
+
+// Diagram 2 - cntassign
+
+module test(x1, x2, x3, f); 
+    input x1, x2, x3;
+    output f;
+    
+    assign f = (x1|x2|x3)&(~x1|x2|~x3)&(x1|~x2|~x3)&(~x1|~x2|x3);
+    
+endmodule
+
+
+// P1
+
+module demo(a, b, c, d, f); 
+    input a,b,c,d;
+    output f;
+    
+    assign f = (~c&~d)|(~a&~b)|(~b&~c);
+endmodule
+
+// P2
+
+module test(a, b, c, d, f); 
+    input a,b,c,d;
+    output f;
+    
+assign f = (c&~d)|(~a&b&c)|(b&~d)|(~a&~d);
+endmodule
+
+// P3
+
+module test(a, b, c, d, f); 
+    input a,b,c,d;
+    output f;
+    assign f = (c|d)&(b|c)&(~a|~b|~c|~d);
+endmodule
+
+// P4
+
+module test(a, b, c, d, f); 
+    input a,b,c,d;
+    output f;
+    assign f = (~c|d)&(~a|d)&(a|~b|c|~d);
+endmodule
+
+// P5
+
+module fulladder(input s1, input s2, input carryin, output sum, output carry);
+    assign sum = s1^s2^carryin;
+    assign carry = (s1&s2)|(s1&carryin)|(s2&carryin);
+endmodule
+
+module demo(input [3:0] x, input [3:0] y, output [3:0] s, output cout);
+    wire f;
+    wire [2:0] c;
+    fulladder fadd1(x[0],y[0],1'b0, s[0], c[0]);
+    fulladder fadd2(x[1],y[1],c[0], s[1], c[1]);
+    fulladder fadd3(x[2],y[2],c[1], s[2], c[2]);
+    fulladder fadd4(x[3],y[3],c[2], s[3], f);
+    
+    assign cout = f;
+endmodule
+
+// P6
+
+
+
+
+module fulladder(input s1, input s2, input carryin, output sum, output carry);
+    assign sum = s1^s2^carryin;
+    assign carry = (s1&s2)|(s1&carryin)|(s2&carryin);
+endmodule
+
+module demo(input [3:0] x, input [3:0] y, input m, output [3:0] s, output cout);
+    wire f;
+    wire [2:0] c;
+    wire [3:0] yout;
+    
+    assign yout[0] = y[0]^m;
+    assign yout[1] = y[1]^m;
+    assign yout[2] = y[2]^m;
+    assign yout[3] = y[3]^m;
+    
+    
+    
+    fulladder fadd1(x[0],yout[0],m, s[0], c[0]);
+    fulladder fadd2(x[1],yout[1],c[0], s[1], c[1]);
+    fulladder fadd3(x[2],yout[2],c[1], s[2], c[2]);
+    fulladder fadd4(x[3],yout[3],c[2], s[3], f);
+    
+    assign cout = f;
+endmodule
+
+
+// P6 -- 2
+
+module fulladder(input s1, input s2, input carryin, output sum, output carry);
+    assign sum = s1^s2^carryin;
+    assign carry = (s1&s2)|(s1&carryin)|(s2&carryin);
+endmodule
+
+module xor4(input [3:0] y1,input xorbit ,output [3:0] y2);
+    assign y2[3] = y1[3]^xorbit;
+    assign y2[2] = y1[2]^xorbit;
+    assign y2[1] = y1[1]^xorbit;
+    assign y2[0] = y1[0]^xorbit;
+endmodule
+
+module demo(input [3:0] x, input [3:0] y, input m, output [3:0] s, output cout);
+    wire f;
+    wire [2:0] c;
+    wire [3:0] yout;
+    
+    xor4 xor1(y, m, yout);
+    
+    fulladder fadd1(x[0],yout[0],m, s[0], c[0]);
+    fulladder fadd2(x[1],yout[1],c[0], s[1], c[1]);
+    fulladder fadd3(x[2],yout[2],c[1], s[2], c[2]);
+    fulladder fadd4(x[3],yout[3],c[2], s[3], f);
+    
+    assign cout = f;
+endmodule
+
+// P7
+
+`timescale 1ns / 1ps
+
+module addsub(input x1, input x2, input x3, output f);
+    assign f = ~(~(x2&x2)&~(x1&~(x3&x3)));
+endmodule
+
+module addsub(input x1, input x2, input x3, output f);
+    assign f = ~(~(x1|x2)|~(x2|~(x3|x3)));
+endmodule
+
+
+// P8
+
+module addsub(input x1, input x2, input x3, input x4, output f);
+    assign g = (~x1&x2)|(x1&~x2);
+    assign f = x3&g | x4&~g;
+endmodule;
+
+// Sub - 2
+
+`timescale 1ns / 1ps
+
+module fadd(input i1, input i2,input cin, output s1, output cout);
+    assign s1 = i1^i2^cin;
+    assign cout = (i1&i2)|(i1&cin)|(i2&cin);
+endmodule
+
+module xor4(input [3:0] xorin, input xorbit, output [3:0] xorout);
+    assign xorout[3] = xorin[3]^xorbit;
+    assign xorout[2] = xorin[2]^xorbit;
+    assign xorout[1] = xorin[1]^xorbit;
+    assign xorout[0] = xorin[0]^xorbit;
+endmodule
+
+module addsub(input [3:0] x1,input [3:0] y1, input m, output [3:0] sum,output carryout);
+       wire [2:0] c;
+       wire [3:0] y2;
+       xor4 xor41(y1, m, y2);
+       fadd fadd1(x1[0], y2[0], m, sum[0], c[0]);
+       fadd fadd2(x1[1], y2[1], c[0], sum[1], c[1]);
+       fadd fadd3(x1[2], y2[2], c[1], sum[2], c[2]);
+       fadd fadd4(x1[3], y2[3], c[2], sum[3], carryout);
+endmodule
+
+//mult - update plss
+
+`timescale 1ns / 1ps
+
+module fadd(input i1, input i2,input cin, output s1, output cout);
+    assign s1 = i1^i2^cin;
+    assign cout = (i1&i2)|(i1&cin)|(i2&cin);
+endmodule
+
+module xor4(input [3:0] xorin, input xorbit, output [3:0] xorout);
+    assign xorout[3] = xorin[3]^xorbit;
+    assign xorout[2] = xorin[2]^xorbit;
+    assign xorout[1] = xorin[1]^xorbit;
+    assign xorout[0] = xorin[0]^xorbit;
+endmodule
+
+module adder4(input [3:0] x1,input [3:0] y1, input m, output [3:0] sum,output carryout);
+       wire [2:0] c;
+       wire [3:0] y2;
+       xor4 xor41(y1, m, y2);
+       fadd fadd1(x1[0], y2[0], m, sum[0], c[0]);
+       fadd fadd2(x1[1], y2[1], c[0], sum[1], c[1]);
+       fadd fadd3(x1[2], y2[2], c[1], sum[2], c[2]);
+       fadd fadd4(x1[3], y2[3], c[2], sum[3], carryout);
+endmodule
+
+module addsub(input [2:0] mul1, input [2:0] mul2, output [5:0] mulout);
+       assign mulout[0] = mul1[0]&mul2[0];
+       wire [3:0] fout1;
+       wire cout1;
+       adder4 adder4_1({0, 0, mul1[2]&mul2[0], mul1[1]&mul2[0]}, {0, mul1[2]&mul2[1], mul1[1]&mul2[1], mul1[0]&mul2[1]}, 0, fout1, cout);
+       assign mulout[1] = fout1[0];
+       wire [3:0] fout2;
+       wire cout2;
+       adder4 adder4_2({0, fout1[3], fout1[2], fout1[1]}, {0, mul1[2]&mul2[2], mul1[1]&mul2[2], mul1[0]&mul2[2]}, 0, fout2, cout2);
+       assign mulout[5] = fout2[3];
+       assign mulout[4] = fout2[2];
+       assign mulout[3] = fout2[1];
+       assign mulout[2] = fout2[0];
+endmodule
+
+// p9
+
+module addsub(input a, input b, input c, input d, output f);
+    assign g = a&b;
+    assign h = c|d;
+    
+    assign f = ~(g^h);
+endmodule
+
+
+// p10
+
+`timescale 1ns / 1ps
+
+module demo(input w0, input w1, input s, output f);
+    reg g;
+    always @(*) begin
+    g = s?w1:w0;
+    end
+    
+    assign f = g;
+        
+endmodule
+
+// p11
+
+`timescale 1ns / 1ps
+
+module demo(input [3:0] w, input [1:0] s, output f);
+        
+    reg g;
+    
+    always @(*) begin
+        g = (s[1])?(s[0]?w[3]:w[2]):(s[0]?w[1]:w[0]);
+    end
+    
+    assign f = g;
+        
+endmodule
+
+// p12
+`timescale 1ns / 1ps
+
+module demo(input w1, w2, input s, output f);
+        
+    reg g;
+    
+    always @(*) begin
+        if(s==0)
+        g = w1;
+        else
+        g = w2;
+    end
+    
+    assign f = g;
+        
+endmodule
+
+
+// p13
+
+`timescale 1ns / 1ps
+
+module demo(input [3:0] w, input [1:0] s, output f);
+        
+    reg g;
+    
+    always @(*) begin
+        if(s[1]==0)
+            if(s[0] == 0)
+                g = w[0];
+            else
+                g = w[1];
+        else
+            if(s[0] == 0)
+                g = w[2];
+            else
+                g = w[3];
+        
+    end
+    
+    assign f = g;
+        
+endmodule
+// p14
+
+`timescale 1ns / 1ps
+
+module mux4(input [3:0] w, input [1:0] s, output reg f);
+    
+    always @(*) begin
+        if(s[1]==0)
+            if(s[0] == 0)
+                f = w[0];
+            else
+                f = w[1];
+        else
+            if(s[0] == 0)
+                f = w[2];
+            else
+                f = w[3];
+        
+    end
+    
+        
+endmodule
+
+
+module demo(input [15:0] w1, input [3:0] s16, output f1);
+    
+    wire [3:0] M;
+    mux4 mux4_1(w1[3:0], s16[1:0], M[0]);
+    mux4 mux4_2(w1[7:4], s16[1:0], M[1]);
+    mux4 mux4_3(w1[11:8], s16[1:0], M[2]);
+    mux4 mux4_4(w1[15:12], s16[1:0], M[3]);
+    mux4 mux4_5(M[3:0], s16[3:2], f1);       
+
+endmodule
+
+
+// p15
+`timescale 1ns / 1ps
+
+module mux4(input [3:0] w, input [1:0] s, output reg f);
+    
+    always @(*) begin
+        case(s)
+        2'b00:f=w[0];
+        2'b01:f=w[1];
+        2'b10:f=w[2];
+        2'b11:f=w[3];
+        endcase
+    end
+    
+        
+endmodule
+
+
+//p16
+
+`timescale 1ns / 1ps
+
+module mux2(input [1:0] w1, input s1, output reg f1);
+    always @(*) begin
+    if(s1==1'b0)
+        f1=w1[0];
+    else
+        f1=w1[1];
+    end
+endmodule
+
+module mux8(input [7:0] w, input [2:0] s, output reg f);
+    
+    always @(*) begin
+        case(s)
+        3'b000:f=w[0];
+        3'b001:f=w[1];
+        3'b010:f=w[2];
+        3'b011:f=w[3];
+        3'b100:f=w[4];
+        3'b101:f=w[5];
+        3'b110:f=w[6];
+        3'b111:f=w[7];
+        
+        endcase
+    end
+    
+        
+endmodule
+
+module mux16(input [15:0] w16, input [3:0] s, output f16);
+    wire [1:0] selout;
+    mux8 mux8_1(w16[7:0], s[2:0], selout[0]);
+    mux8 mux8_2(w16[15:8], s[2:0], selout[1]);
+    mux2 mux2_1(selout, s[3], f16);
+endmodule
+
+//p17 - comparator
+
+`timescale 1ns / 1ps
+
+module comp_4b(input [3:0] a, input [3:0] b, output a_equal, output a_greater, output a_lesser);
+    assign a_equal = (a==b)?1:0;
+    assign a_greater = (a>b)?1:0;
+    assign a_lesser = (a<b)?1:0;
+endmodule
+
+//p18 -b2g
+
+`timescale 1ns / 1ps
+
+module binarytogray(input [3:0] bcode, output reg [3:0] gcode);
+
+    integer i;
+
+    
+    always @(*) begin
+        gcode[3] = bcode[3];
+        for(i=0;i<3;i=i+1) begin
+            gcode[2-i] = bcode[2-i] ^ bcode[3-i]; 
+        end
+    end
+    
+endmodule
+
+//p19 - 4:16
+
+ `timescale 1ns / 1ps
+
+module decoder2_4(input [1:0] W, input En, output reg [3:0] Y);
+
+    always @(W, En) begin
+        if(En == 0)
+            Y = 4'b0000;
+        else
+            case(W)
+                0: Y = 4'b0001;
+                1: Y = 4'b0010;
+                2: Y = 4'b0100;
+                3: Y = 4'b1000;
+            endcase
+    end
+
+endmodule
+
+module decoder4_16(input [3:0] W4, input En4, output [15:0] Y16);
+    
+    wire [3:0] enbl;
+    decoder2_4 dec1(W4[3:2], En4, enbl [3:0]);
+    decoder2_4 dec2(W4[1:0], enbl[0], Y16 [3:0]);
+    decoder2_4 dec3(W4[1:0], enbl[1], Y16 [7:4]);
+    decoder2_4 dec4(W4[1:0], enbl[2], Y16 [11:8]);
+    decoder2_4 dec5(W4[1:0], enbl[3], Y16 [15:12]);
+endmodule
+
+
+// 4.1
+
+module lab4(input [1:0]W, input en, output reg [0:3] Y);
+
+always@(*)begin
+
+    if(en==0)begin
+        Y = 4'b0000;
+    end
+    else begin
+        case(W)
+            0: Y = 4'b0001;
+            1: Y = 4'b0010;
+            2: Y = 4'b0100;
+            3: Y = 4'b1000;
+          endcase
+    end
+
+end
+
+endmodule
+
+// 4.2
+
+module dec4_16(input [3:0] w4, input en ,output [15:0] y16);
+    wire [3:0] m4;
+    lab4 dec1(w4[3:2], en , m4[3:0]);
+    lab4 dec2(w4[1:0],m4[0], y16[3:0]);
+    lab4 dec3(w4[1:0],m4[1], y16[7:4]);
+    lab4 dec4(w4[1:0],m4[2], y16[11:8]);
+    lab4 dec5(w4[1:0],m4[3], y16[15:12]);
+endmodule;
+
+// 4.3
+
+4.3:
+
+module demo(input [3:0]w4, output reg [1:0] y2);
+    always @(*) begin
+        casex(w4)
+            4'b1xxx: y2 = 2'b11;
+            4'b01xx: y2 = 2'b10;
+            4'b001x: y2 = 2'b01;
+            4'b0001: y2 = 2'b00;
+            default: y2 = 2'b00;
+        endcase
+    end
+endmodule
+
+// 4.4
+
+4.4:
+
+module demo(input [15:0] w16, output reg [3:0] y4);
+    
+    integer i;
+    always @(*) begin 
+        for(i=0;i<16;i=i+1) begin
+            if(w16[i]==1'b1) y4 = i;
+        end
+    end 
+endmodule;
+
+// 5.1
+
+5.1:
+
+
+module mux4_1(input I0, input I1, input I2, input I3, input sel1, input sel2, output reg yout);
+    always @(*) begin
+        case({sel1, sel2})
+            2'b00: yout = I0;
+            2'b01: yout = I1;
+            2'b10: yout = I2;
+            2'b11: yout = I3;
+        endcase
+    end       
+endmodule
+
+module demo(input A, input B, input C, input D, output F);
+    mux4_1 mux1(~C|~D, ~D, C&~D, C|~D, A, B, F);
+endmodule
+
+
+
+
+
+
+
+
+
+
+
